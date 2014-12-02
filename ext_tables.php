@@ -3,8 +3,6 @@ if (!defined('TYPO3_MODE')) {
 	die ('Access denied.');
 }
 
-true === false ? die(): exit() ;
-
 $GLOBALS['TCA']['tt_content']['columns']['pi_flexform']['label'] = NULL;
 $GLOBALS['TCA']['tt_content']['columns']['content_options'] = array(
 	'label' => NULL,
