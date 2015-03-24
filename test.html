@@ -1,5 +1,761 @@
-  <flux:field.select name="fontcolor" items="Dunkel, Hell" default="Dunkel" label="Schriftfarbe"/>
-  <flux:field.input name="header" label="Header" />
-  <flux:field.input name="subheader" label="Subheadder"/>
-  <flux:field.text name="text" rows="6" cols="30" label="Text"/>
-  <flux:field.input name="buttontext" label="Buttontext"/>
+<[REPORT pageNum="3"]>
+<[DEFINE name="PAGE_SUMMARY" value="0"/]>
+<[DEFINE name="PAGE_BY_SE" value="1"/]>
+<[DEFINE name="PAGE_HISTORICAL" value="2"/]>
+<[DEFINE name="company" value="reportData.company"/]>
+<[DEFINE name="customer" value="reportData.customer"/]>
+<[DEFINE name="currentDate" value="reportData.currentDate"/]>
+<[DEFINE name="dateFormat" value="reportData.createDateFormat('MMM d, yyyy', 'en')"/]>
+<[DEFINE name="singlePage" value="reportData.singlePage"/]>
+<[DEFINE name="currentPage" value="reportData.currentPage"/]>
+<[DEFINE name="helpURL" value="'http://www.link-assistant.com/rank-tracker/report-help.html'"/]>
+<[DEFINE name="numberFormat" value="reportData.createNumberFormat('0.#')"/]>
+<[DEFINE name="compareAgainst" value="reportData.compareAgainst"/]>
+<[DEFINE name="keywords" value="reportData.keywords"/]>
+<[DEFINE name="searchEngines" value="reportData.searchEngines"/]>
+<[DEFINE name="maxResults" value="reportData.maxResults"/]>
+<[DEFINE name="ENTERED_VALUE" value="2147483647"/]>
+<[DEFINE name="DROPPED_VALUE" value="-2147483646"/]>
+<[DEFINE name="NOT_RANKED_VALUE" value="-2147483647"/]>
+<[DEFINE name="NOT_CHECKED_VALUE" value="-2147483648"/]>
+<[DEFINE name="ALEXA_ERROR" value="-3"/]>
+<[DEFINE name="NON_IN_TOP" value="'Not in top'"/]>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <title>Search Engine Rankings Report - <[ECHO text="customer.website"/]></title>
+    <style type="text/css">
+        body { margin:0; font: Arial; background-color: #FFFFFF; }
+        .blcolor { color: #036DA6; }
+        .redcolor { color: #FD0000; }
+        .sp0 { font: bold 40px Arial; }
+        .sp1 { font: bold 26px Arial; }
+        .sp2 { font: bold 20px Arial; }
+        .sp3 { font: 12px Arial; }
+        .sp3_bold { font: bold 14px Arial; }
+        .td3 { background-color: #036DA6; color: #FFFFFF; }
+        .sp4 { font: 16px Arial; }
+        .marg1 { margin: 10px 10px 10px 10px; }
+        .marg2 { margin: 10px 20px 10px 20px; }
+        .marg3 { margin-left: 10px; margin-right: 10px; }
+        .marg4 { margin: 10px 0px 0px 0px; }
+        .marg5 { margin-right: 10px; }
+        .sp5 { font: bold 18px Arial; }
+        .sp6 { font: 10px Arial; }
+        .tbl1 { border-left: 1px solid #DAEAF2; border-right: 1px solid #DAEAF2; border-top: 1px solid #DAEAF2; }
+        a:link { color: inherit; }
+        a:visited { color: inherit; }
+        a:hover { color: inherit; }
+        .td4 { background-color: #A9CDE1; color: #036DA6; }
+        .underline_cell { border-bottom: 1px solid #DAEAF2; }
+        .td2_color { background-color: #036DA6; color: #FFFFFF; }
+        .td2 {  border-bottom: 1px solid #DAEAF2; }
+        .left_border {  border-left: 1px solid #DAEAF2; }
+        .bottom_border {  border-bottom: 1px solid #DAEAF2; }
+        .right_border { border-right: 1px solid #DAEAF2; }
+        .right2_border { border-right: 2px solid #DAEAF2; }
+        .right_border_dark { border-right: 1px solid #8EBED8; }
+        .right2_border_dark { border-right: 2px solid #8EBED8; }
+    </style>
+</head>
+<body>
+<[IF condition="currentPage == PAGE_SUMMARY || singlePage == true"]>
+<[THEN]>
+<a name="<[ECHO text="reportData.getPageName(PAGE_SUMMARY)"/]>">
+<table cellpadding="0" cellspacing="0">
+<tr>
+    <td width="45" class="td2_color left_border bottom_border right_border">&nbsp;</td>
+    <td width="18" align="left" valign="top"><img src="images/shadowRightTop.png" alt="" width="18" height="97" border="0"></td>
+    <td width="155" align="center" valign="middle"><[IF condition="company.logo != null"]><[THEN]><a href="<[ECHO text="company.website"/]>" target="_blank"><[IMAGE src="company.logo" alt="company.name" border="0" maxWidth="150" maxHeight="97"/]></a><[/THEN]><[/IF]></td>
+    <td width="725">
+        <table border="0" cellpadding="0" cellspacing="0" width="725">
+            <tr valign="top">
+                <td width="20" align="right" valign="top"><img src="images/shadowLeftTop.png" alt="" width="20" height="97" border="0"></td>
+                <td width="687" class="td2_color left_border bottom_border right_border">
+                    <div class="marg1">
+                        <a href="<[ECHO text="customer.website"/]>" target="_blank" class="sp1 td2_color"><[ECHO text="customer.website"/]></a><br>
+                        <span class="sp2">Search Engine Rankings Report</span><br><br>
+                        <span class="sp3">Report created on: <b class="sp3_bold"><[ECHO text="dateFormat.format(currentDate)"/]></b></span><br>
+                        <span class="sp3">Rankings data based on <b class="sp3_bold">top <[ECHO text="maxResults"/]> results</b> per search engine.</span><br>
+                        <span class="sp3">Rankings difference based on the <b class="sp3_bold"><[ECHO text="compareAgainst.getDescription('en').toLowerCase()"/]></b> results.</span>
+                    </div>
+                </td>
+                <td width="18" align="left" valign="top"><img src="images/shadowRightTop.png" alt="" width="18" height="97" border="0"></td>
+            </tr>
+        </table>
+    </td>
+</tr>
+
+<tr>
+<td width="45">&nbsp;</td>
+<td width="170" valign="top" colspan="2">
+
+    <table border="0" width="100%" class="marg4">
+        <tr>
+            <td width="20" align="right">
+                <span class="sp3 blcolor"><b>&#9658;</b></span>
+            </td>
+            <td><span class="sp3 blcolor">
+								<b>Summary</b>
+							</span></td>
+        </tr>
+        <tr>
+            <td width="20" align="right">
+            </td>
+            <td><span class="sp3 blcolor">
+								<a href="<[ECHO text="singlePage ? '#' + reportData.getPageName(PAGE_BY_SE) : reportData.getPageName(PAGE_BY_SE) + '.' + reportData.getPageExtension()"/]>" class="blcolor">By&nbsp;Search&nbsp;Engine</a>
+							</span></td>
+        </tr>
+        <tr>
+            <td width="20" align="right">
+            </td>
+            <td><span class="sp3 blcolor">
+								<a href="<[ECHO text="singlePage ? '#' + reportData.getPageName(PAGE_HISTORICAL) : reportData.getPageName(PAGE_HISTORICAL) + '.' + reportData.getPageExtension()"/]>" class="blcolor">Historical&nbsp;Data</a>
+							</span></td>
+        </tr>
+    </table>
+
+</td>
+<td valign="top" width="725">
+<div class="marg2">
+						<span class="sp3">
+This search engine rankings report has been created by <a href="<[ECHO text="company.website"/]>" target="_blank" class="blcolor"><[ECHO text="company.name"/]></a> for your personal information.
+It is tailored for your specific website and will give you detailed information on the exact ranking positions of your targeted keyword phrases in all major search engines for every page within your website.
+All information was accurate at the time the report was generated.
+<br><br>For further details please do not hesitate to <a href="mailto:<[ECHO text="company.email"/]>" class="blcolor">contact us</a>.
+<br><br>Regards,<br>
+<a href="<[ECHO text="company.website"/]>" target="_blank" class="blcolor"><[ECHO text="company.name"/]></a><br>
+</span><br><br>
+    <span class="sp1 blcolor">Summary View</span><br>
+</div>
+
+<table border="0" cellpadding="0" cellspacing="0" width="725">
+    <tr valign="top">
+        <td valign="top" width="20" height="97"><img src="images/shadowLeftTop.png" alt="" width="20" height="97" border="0"></td>
+        <td colspan="3" rowspan="3">
+            <table border="0" class="tbl1" cellpadding="0" cellspacing="0" width="687">
+                <tr>
+                    <td height="30" class="td3"><div class="sp4 marg3"><b>Visibility score</b></div></td>
+                    <td height="30" class="td3" align="right"><div class="marg3"><a href="<[ECHO text="helpURL"/]>#visiblity" class="sp3 td2_color"><b>Help</b></a></div></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <table border="0" cellpadding="0" cellspacing="0" width="687">
+                            <tr>
+                                <td align="center" height="200"><[CHART width="680" height="178" src="reportData.visibilityChart" fileName="'visibility.png'" numberLabel="'Score, %'" inverted="false" dateLabel="'Date'" lowerRange="0" upperRange="100"/]></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td height="45" colspan="2" align="center" valign="middle" class="underline_cell"><div class="marg3"><span class="sp3_bold" style="color: #036DA6;">Today's visibility:</span> <span class="sp5 redcolor"><[ECHO text="keywords.getVisibilityScore(searchEngines)"/]></span><span class="sp3"> out of <[ECHO text="keywords.size() * searchEngines.size() * 30"/]> </span><span class="sp5 redcolor">(<[ECHO text="Math.round((keywords.getVisibilityScore(searchEngines) * 100) / (keywords.size() * searchEngines.size() * 30))"/]>%)<br><br></span></div></td>
+                </tr>
+            </table>
+        </td>
+        <td valign="top" width="18" height="97"><img src="images/shadowRightTop.png" alt="" width="18" height="97" border="0"></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td valign="bottom" height="54"><img src="images/shadowLeftBottom.png" alt="" width="20" height="54" border="0"></td>
+        <td valign="bottom" height="54"><img src="images/shadowRightBottom.png" alt="" width="18" height="54" border="0"></td>
+    </tr>
+    <tr>
+        <td height="19"><img src="images/shadowLeftBottomCorner.png" alt="" width="20" height="19" border="0"></td>
+        <td align="left" valign="bottom"><img src="images/shadowBottomLeft.png" alt="" width="125" height="19" border="0"></td>
+        <td></td>
+        <td align="right" valign="bottom"><img src="images/shadowBottomRight.png" alt="" width="125" height="19" border="0"></td>
+        <td><img src="images/shadowRightBottomCorner.png" alt="" width="18" height="19" border="0"></td>
+    </tr>
+</table>
+<br>
+<table border="0" cellpadding="0" cellspacing="0" width="725">
+    <tr valign="top">
+        <td valign="top" width="20" height="97"><img src="images/shadowLeftTop.png" alt="" width="20" height="97" border="0"></td>
+        <td colspan="3" rowspan="3">
+            <table border="0" class="tbl1" cellpadding="0" cellspacing="0" width="687">
+                <tr>
+                    <td height="30" class="td3"><div class="sp4 marg3"><b>Rankings overview</b> (a total of <b><[ECHO text="keywords.size() * searchEngines.size()"/]></b> rankings for <b><[ECHO text="keywords.size()"/]></b> keywords)</div></td>
+                    <td height="30" class="td3" align="right"><div class="marg3"><a href="<[ECHO text="helpURL"/]>#overview" class="sp3 td2_color"><b>Help</b></a></div></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <table border="0" cellpadding="0" cellspacing="0" width="687">
+                            <tr>
+                                <td height="30" width="343" class="td4 right_border_dark" colspan="3"><div class="sp3 marg3"><b>Top Rankings Overview</b></div></td>
+                                <td height="30" width="344" class="td4" colspan="3"><div class="sp3 marg3"><b>Rankings Dynamics</b></div></td>
+                            </tr>
+                            <tr>
+                                <td height="30" width="125"><div class="sp3 marg3">Ranked 1st:</div></td>
+                                <td height="30" width="48"><div class="sp3 marg3 redcolor" align="right"><[ECHO text="keywords.getInTop(searchEngines, 1)"/]></div></td>
+                                <td height="30" width="170" class="right_border">&nbsp;</td>
+                                <td height="30" width="145"><div class="sp3 marg3">Moved up:</div></td>
+                                <td height="30" width="49"><div class="sp3 marg3 redcolor" align="right"><[ECHO text="keywords.getMovedUp(compareAgainst)"/]></div></td>
+                                <td height="30" width="150">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td height="30"><div class="sp3 marg3">In Top 10:</div></td>
+                                <td height="30"><div class="sp3 marg3 redcolor" align="right"><[ECHO text="keywords.getInTop(searchEngines, 10)"/]></div></td>
+                                <td height="30" class="right_border">&nbsp;</td>
+                                <td height="30"><div class="sp3 marg3">Moved down:</div></td>
+                                <td height="30"><div class="sp3 marg3 redcolor" align="right"><[ECHO text="keywords.getMovedDown(compareAgainst)"/]></div></td>
+                                <td height="30">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td height="30" class="underline_cell"><div class="sp3 marg3">In Top 20:</div></td>
+                                <td height="30" class="underline_cell"><div class="sp3 marg3 redcolor" align="right"><[ECHO text="keywords.getInTop(searchEngines, 20)"/]></div></td>
+                                <td height="30" class="underline_cell right_border">&nbsp;</td>
+                                <td height="30" class="underline_cell"><div class="sp3 marg3">Not changed:</div></td>
+                                <td height="30" class="underline_cell"><div class="sp3 marg3 redcolor" align="right"><[ECHO text="keywords.size() * searchEngines.size() - (keywords.getMovedDown(compareAgainst) + keywords.getMovedUp(compareAgainst))"/]></div></td>
+                                <td height="30" class="underline_cell">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td height="30"><div class="sp3 marg3">In Top <[ECHO text="maxResults"/]>:</div></td>
+                                <td height="30"><div class="sp3 marg3 redcolor" align="right"><[ECHO text="keywords.getInTop(searchEngines, maxResults)"/]></div></td>
+                                <td height="30" class="right_border">&nbsp;</td>
+                                <td height="30"><div class="sp3 marg3">Entered Top <[ECHO text="maxResults"/]>:</div></td>
+                                <td height="30"><div class="sp3 marg3 redcolor" align="right"><[ECHO text="keywords.getEnteredTop(compareAgainst, maxResults)"/]></div></td>
+                                <td height="30">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td height="30" class="underline_cell"><div class="sp3 marg3">Not in Top <[ECHO text="maxResults"/]>:</div></td>
+                                <td height="30" class="underline_cell"><div class="sp3 marg3 redcolor" align="right"><[ECHO text="keywords.size() * searchEngines.size() - keywords.getInTop(searchEngines, maxResults)"/]></div></td>
+                                <td height="30" class="underline_cell right_border">&nbsp;</td>
+                                <td height="30" class="underline_cell"><div class="sp3 marg3">Left Top <[ECHO text="maxResults"/]>:</div></td>
+                                <td height="30" class="underline_cell"><div class="sp3 marg3 redcolor" align="right"><[ECHO text="keywords.getLeftTop(compareAgainst, maxResults)"/]></div></td>
+                                <td height="30" class="underline_cell">&nbsp;</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </td>
+        <td valign="top" width="18" height="97"><img src="images/shadowRightTop.png" alt="" width="18" height="97" border="0"></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td valign="bottom" height="54"><img src="images/shadowLeftBottom.png" alt="" width="20" height="54" border="0"></td>
+        <td valign="bottom" height="54"><img src="images/shadowRightBottom.png" alt="" width="18" height="54" border="0"></td>
+    </tr>
+    <tr>
+        <td height="19"><img src="images/shadowLeftBottomCorner.png" alt="" width="20" height="19" border="0"></td>
+        <td align="left" valign="bottom"><img src="images/shadowBottomLeft.png" alt="" width="125" height="19" border="0"></td>
+        <td></td>
+        <td align="right" valign="bottom"><img src="images/shadowBottomRight.png" alt="" width="125" height="19" border="0"></td>
+        <td><img src="images/shadowRightBottomCorner.png" alt="" width="18" height="19" border="0"></td>
+    </tr>
+</table>
+<br>
+<table border="0" cellpadding="0" cellspacing="0" width="725">
+    <tr valign="top">
+        <td valign="top" width="20" height="97"><img src="images/shadowLeftTop.png" alt="" width="20" height="97" border="0"></td>
+        <td colspan="3" rowspan="3">
+            <table border="0" class="tbl1" cellpadding="0" cellspacing="0" width="687">
+                <tr>
+                    <td height="30" class="td3"><div class="sp4 marg3"><b>Search engines overview</b> (a total of <b><[ECHO text="searchEngines.size()"/]></b> search engines checked)</div></td>
+                    <td height="30" class="td3" align="right"><div class="marg3"><a href="<[ECHO text="helpURL"/]>#seTableOverview" class="sp3 td2_color"><b>Help</b></a></div></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <table border="0" cellpadding="0" cellspacing="0" width="687">
+                            <tr>
+                                <td height="30" width="250" class="td4 right_border_dark" colspan="4"><div class="sp3 marg3"><b>Search Engine &#9660;</b></div></td>
+                                <td height="30" width="87" class="td4 right_border_dark" align="right"><div class="sp3 marg3"><b>In Top 10</b></div></td>
+                                <td height="30" width="87" class="td4 right_border_dark" align="right"><div class="sp3 marg3"><b>In Top 20</b></div></td>
+                                <td height="30" width="87" class="td4 right_border_dark" align="right"><div class="sp3 marg3"><b>In Top 30</b></div></td>
+                                <td height="30" width="87" class="td4 right_border_dark" align="right"><div class="sp3 marg3"><b>In Top <[ECHO text="maxResults"/]></b></div></td>
+                                <td height="30" width="89" class="td4" align="right"><div class="sp3 marg3"><b>Visibility</b></div></td>
+                            </tr>
+                            <[FOR_EACH name="reportData.sort(searchEngines, 'name')" id="searchEngine"]>
+                            <tr>
+                                <td height="30" width="40" class="underline_cell right_border" align="right"><div class="marg3 blcolor sp3"><[ECHO text="searchEngineCounter"/]></div></td>
+                                <td height="30" width="50" class="underline_cell" align="right"><div class="marg3"><img src="images/se/<[ECHO text="searchEngine.iconFileName"/]>" alt="" width="16" height="16" border="0"></div></td>
+                                <td height="30" width="105" class="underline_cell"><div class="blcolor sp3">
+                                    <a href="<[ECHO text="singlePage ? '#' + reportData.getPageName(PAGE_BY_SE) + '_' + searchEngine.type : reportData.getPageName(PAGE_BY_SE) + '.' + reportData.getPageExtension() + '#' + reportData.getPageName(PAGE_BY_SE) + '_' + searchEngine.type"/]>" class="blcolor"><[ECHO text="searchEngine.name"/]></a>
+                                </div></td>
+                                <td height="30" width="55" class="underline_cell right_border" align="right"><div class="marg3"><img src="images/se/flags/<[ECHO text="searchEngine.country"/]>.png" alt="" width="25" height="15" border="0"></div></td>
+                                <td height="30" width="87" class="underline_cell right_border" align="right"><div class="sp3 marg3 redcolor"><[ECHO text="keywords.getInTop(searchEngine, 10)"/]></div></td>
+                                <td height="30" width="87" class="underline_cell right_border" align="right"><div class="sp3 marg3 redcolor"><[ECHO text="keywords.getInTop(searchEngine, 20)"/]></div></td>
+                                <td height="30" width="87" class="underline_cell right_border" align="right"><div class="sp3 marg3 redcolor"><[ECHO text="keywords.getInTop(searchEngine, 30)"/]></div></td>
+                                <td height="30" width="87" class="underline_cell right_border" align="right"><div class="sp3 marg3 redcolor"><[ECHO text="keywords.getInTop(searchEngine, maxResults)"/]></div></td>
+                                <td height="30" width="89" class="underline_cell" align="right"><div class="sp3 marg3 redcolor"><[ECHO text="keywords.getVisibilityScore(searchEngine)"/]> (<[ECHO text="Math.round((keywords.getVisibilityScore(searchEngine) * 100) / (keywords.size() * 30))"/]>%)</div></td>
+                            </tr>
+                            <[/FOR_EACH]>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td height="30" colspan="2" align="right" valign="middle" class="underline_cell"><div class="marg3"><div class="sp3 blcolor"><a href="<[ECHO text="singlePage ? '#' + reportData.getPageName(PAGE_BY_SE) : reportData.getPageName(PAGE_BY_SE) + '.' + reportData.getPageExtension()"/]>" class="blcolor">View rankings report by search engines</a></div></div></td>
+                </tr>
+            </table>
+        </td>
+        <td valign="top" width="18" height="97"><img src="images/shadowRightTop.png" alt="" width="18" height="97" border="0"></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td valign="bottom" height="54"><img src="images/shadowLeftBottom.png" alt="" width="20" height="54" border="0"></td>
+        <td valign="bottom" height="54"><img src="images/shadowRightBottom.png" alt="" width="18" height="54" border="0"></td>
+    </tr>
+    <tr>
+        <td height="19"><img src="images/shadowLeftBottomCorner.png" alt="" width="20" height="19" border="0"></td>
+        <td align="left" valign="bottom"><img src="images/shadowBottomLeft.png" alt="" width="125" height="19" border="0"></td>
+        <td></td>
+        <td align="right" valign="bottom"><img src="images/shadowBottomRight.png" alt="" width="125" height="19" border="0"></td>
+        <td><img src="images/shadowRightBottomCorner.png" alt="" width="18" height="19" border="0"></td>
+    </tr>
+</table>
+<br>
+<[DEFINE name="topCount" value="Math.min(keywords.size(), 10)"/]>
+
+
+<br>
+</a>
+<[/THEN]>
+<[/IF]>
+<[IF condition="currentPage == PAGE_BY_SE || singlePage == true"]>
+<[THEN]>
+<[IF condition="singlePage"]><[THEN]><pd4ml:page.break><[/THEN]><[/IF]>
+<a name="<[ECHO text="reportData.getPageName(PAGE_BY_SE)"/]>">
+<table cellpadding="0" cellspacing="0">
+    <tr>
+        <td width="45" class="td2_color left_border bottom_border right_border">&nbsp;</td>
+        <td width="18" align="left" valign="top"><img src="images/shadowRightTop.png" alt="" width="18" height="97" border="0"></td>
+        <td width="155" align="center" valign="middle"><[IF condition="company.logo != null"]><[THEN]><a href="<[ECHO text="company.website"/]>" target="_blank"><[IMAGE src="company.logo" alt="company.name" border="0" maxWidth="150" maxHeight="97"/]></a><[/THEN]><[/IF]></td>
+        <td width="725">
+            <table border="0" cellpadding="0" cellspacing="0" width="725">
+                <tr valign="top">
+                    <td width="20" align="right" valign="top"><img src="images/shadowLeftTop.png" alt="" width="20" height="97" border="0"></td>
+                    <td width="687" class="td2_color left_border bottom_border right_border">
+                        <div class="marg1">
+                            <a href="<[ECHO text="customer.website"/]>" target="_blank" class="sp1 td2_color"><[ECHO text="customer.website"/]></a><br>
+                            <span class="sp2">Search Engine Rankings Report</span><br><br>
+                            <span class="sp3">Report created on: <b class="sp3_bold"><[ECHO text="dateFormat.format(currentDate)"/]></b></span><br>
+                            <span class="sp3">Rankings data based on <b class="sp3_bold">top <[ECHO text="maxResults"/]> results</b> per search engine.</span><br>
+                            <span class="sp3">Rankings difference based on the <b class="sp3_bold"><[ECHO text="compareAgainst.getDescription('en').toLowerCase()"/]></b> results.</span>
+                        </div>
+                    </td>
+                    <td width="18" align="left" valign="top"><img src="images/shadowRightTop.png" alt="" width="18" height="97" border="0"></td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+    <tr>
+        <td width="45">&nbsp;</td>
+        <td width="170" valign="top" colspan="2">
+
+            <table border="0" width="100%" class="marg4">
+                <tr>
+                    <td width="20" align="right">
+                    </td>
+                    <td><span class="sp3 blcolor">
+								<a href="<[ECHO text="singlePage ? '#' + reportData.getPageName(PAGE_SUMMARY) : reportData.getPageName(PAGE_SUMMARY) + '.' + reportData.getPageExtension()"/]>" class="blcolor">Summary</a>
+							</span></td>
+                </tr>
+                <tr>
+                    <td width="20" align="right">
+                        <span class="sp3 blcolor"><b>&#9658;</b></span>
+                    </td>
+                    <td><span class="sp3 blcolor">
+								<b>By&nbsp;Search&nbsp;Engine</b>
+							</span></td>
+                </tr>
+                <tr>
+                    <td width="20" align="right">
+                    </td>
+                    <td><span class="sp3 blcolor">
+								<a href="<[ECHO text="singlePage ? '#' + reportData.getPageName(PAGE_HISTORICAL) : reportData.getPageName(PAGE_HISTORICAL) + '.' + reportData.getPageExtension()"/]>" class="blcolor">Historical&nbsp;Data</a>
+							</span></td>
+                </tr>
+            </table>
+
+        </td>
+        <td valign="top" width="725">
+            <div class="marg2">
+                <span class="sp1 blcolor">By Search Engine</span><br>
+            </div>
+            <table border="0" cellpadding="0" cellspacing="0" width="725">
+                <tr valign="top">
+                    <td valign="top" width="20" height="97"><img src="images/shadowLeftTop.png" alt="" width="20" height="97" border="0"></td>
+                    <td colspan="3" rowspan="3">
+                        <table border="0" class="tbl1" cellpadding="0" cellspacing="0" width="687">
+                            <tr>
+                                <td height="30" class="td3"><div class="sp4 marg3"><b>Search engines overview</b> (a total of <b><[ECHO text="searchEngines.size()"/]></b> search engines checked)</div></td>
+                                <td height="30" class="td3" align="right"><div class="marg3"><a href="<[ECHO text="helpURL"/]>#seTableBySE" class="sp3 td2_color"><b>Help</b></a></div></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <table border="0" cellpadding="0" cellspacing="0" width="687">
+                                        <tr>
+                                            <td height="30" width="250" class="td4 right_border_dark" colspan="4"><div class="sp3 marg3"><b>Search Engine &#9660;</b></div></td>
+                                            <td height="30" width="87" class="td4 right_border_dark" align="right"><div class="sp3 marg3"><b>In Top 10</b></div></td>
+                                            <td height="30" width="87" class="td4 right_border_dark" align="right"><div class="sp3 marg3"><b>In Top 20</b></div></td>
+                                            <td height="30" width="87" class="td4 right_border_dark" align="right"><div class="sp3 marg3"><b>In Top 30</b></div></td>
+                                            <td height="30" width="87" class="td4 right_border_dark" align="right"><div class="sp3 marg3"><b>In Top <[ECHO text="maxResults"/]></b></div></td>
+                                            <td height="30" width="89" class="td4" align="right"><div class="sp3 marg3"><b>Visibility</b></div></td>
+                                        </tr>
+                                        <[FOR_EACH name="reportData.sort(searchEngines, 'name')" id="searchEngine"]>
+                                        <tr>
+                                            <td height="30" width="40" class="underline_cell right_border" align="right"><div class="marg3 blcolor sp3"><[ECHO text="searchEngineCounter"/]></div></td>
+                                            <td height="30" width="50" class="underline_cell" align="right"><div class="marg3"><img src="images/se/<[ECHO text="searchEngine.iconFileName"/]>" alt="" width="16" height="16" border="0"></div></td>
+                                            <td height="30" width="105" class="underline_cell"><div class="blcolor sp3">
+                                                <a href="<[ECHO text="singlePage ? '#' + reportData.getPageName(PAGE_BY_SE) + '_' + searchEngine.type : reportData.getPageName(PAGE_BY_SE) + '.' + reportData.getPageExtension() + '#' + reportData.getPageName(PAGE_BY_SE) + '_' + searchEngine.type"/]>" class="blcolor"><[ECHO text="searchEngine.name"/]></a>
+                                            </div></td>
+                                            <td height="30" width="55" class="underline_cell right_border" align="right"><div class="marg3"><img src="images/se/flags/<[ECHO text="searchEngine.country"/]>.png" alt="" width="25" height="15" border="0"></div></td>
+                                            <td height="30" width="87" class="underline_cell right_border" align="right"><div class="sp3 marg3 redcolor"><[ECHO text="keywords.getInTop(searchEngine, 10)"/]></div></td>
+                                            <td height="30" width="87" class="underline_cell right_border" align="right"><div class="sp3 marg3 redcolor"><[ECHO text="keywords.getInTop(searchEngine, 20)"/]></div></td>
+                                            <td height="30" width="87" class="underline_cell right_border" align="right"><div class="sp3 marg3 redcolor"><[ECHO text="keywords.getInTop(searchEngine, 30)"/]></div></td>
+                                            <td height="30" width="87" class="underline_cell right_border" align="right"><div class="sp3 marg3 redcolor"><[ECHO text="keywords.getInTop(searchEngine, maxResults)"/]></div></td>
+                                            <td height="30" width="89" class="underline_cell" align="right"><div class="sp3 marg3 redcolor"><[ECHO text="keywords.getVisibilityScore(searchEngine)"/]> (<[ECHO text="Math.round((keywords.getVisibilityScore(searchEngine) * 100) / (keywords.size() * 30))"/]>%)</div></td>
+                                        </tr>
+                                        <[/FOR_EACH]>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td valign="top" width="18" height="97"><img src="images/shadowRightTop.png" alt="" width="18" height="97" border="0"></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td valign="bottom" height="54"><img src="images/shadowLeftBottom.png" alt="" width="20" height="54" border="0"></td>
+                    <td valign="bottom" height="54"><img src="images/shadowRightBottom.png" alt="" width="18" height="54" border="0"></td>
+                </tr>
+                <tr>
+                    <td height="19"><img src="images/shadowLeftBottomCorner.png" alt="" width="20" height="19" border="0"></td>
+                    <td align="left" valign="bottom"><img src="images/shadowBottomLeft.png" alt="" width="125" height="19" border="0"></td>
+                    <td></td>
+                    <td align="right" valign="bottom"><img src="images/shadowBottomRight.png" alt="" width="125" height="19" border="0"></td>
+                    <td><img src="images/shadowRightBottomCorner.png" alt="" width="18" height="19" border="0"></td>
+                </tr>
+            </table>
+            <br>
+            <[FOR_EACH name="reportData.sort(searchEngines, 'name')" id="searchEngine"]>
+            <a name="<[ECHO text="reportData.getPageName(PAGE_BY_SE) + '_' + searchEngine.type"/]>">
+            <table border="0" cellpadding="0" cellspacing="0" width="725">
+                <tr valign="top">
+                    <td valign="top" width="20" height="97"><img src="images/shadowLeftTop.png" alt="" width="20" height="97" border="0"></td>
+                    <td colspan="3" rowspan="3">
+                        <table border="0" class="tbl1" cellpadding="0" cellspacing="0" width="687">
+                            <tr>
+                                <td height="30" class="td3"><div class="sp4 marg3"><b><[ECHO text="searchEngine.name"/]></b></div></td>
+                                <td height="30" class="td3" align="right"><div class="marg3"><a href="<[ECHO text="singlePage ? '#' + reportData.getPageName(PAGE_BY_SE) : reportData.getPageName(PAGE_BY_SE) + '.' + reportData.getPageExtension()"/]>" class="sp3 td2_color"><b>Up</b></a></div></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <table border="0" cellpadding="0" cellspacing="0" width="687">
+                                        <tr>
+                                            <td height="30" width="250" class="td4 right_border_dark" colspan="2"><div class="sp3 marg3"><b>Keyword &#9660;</b></div></td>
+                                            <td height="30" width="110" class="td4 right_border_dark" align="right"><div class="sp3 marg3"><b>Rank</b></div></td>
+                                            <td height="30" width="110" class="td4 right_border_dark" align="right" colspan="2"><div class="sp3 marg3"><b>Difference</b></div></td>
+                                            <td height="30" width="237" class="td4"><div class="sp3 marg3"><b>URL Found</b></div></td>
+                                        </tr>
+                                        <[FOR_EACH name="reportData.sort(keywords, 'query')" id="keyword"]>
+                                        <tr>
+                                            <td height="30" width="40" class="underline_cell right_border" align="right"><div class="marg3 blcolor sp3"><[ECHO text="keywordCounter"/]></div></td>
+                                            <td height="30" width="210" class="underline_cell right_border"><div class="marg3 blcolor sp3">
+                                                <a href="<[ECHO text="singlePage ? '#' + reportData.getPageName(PAGE_HISTORICAL) + '_' + keyword.query + '_' + searchEngine.type : reportData.getPageName(PAGE_HISTORICAL) + '.' + reportData.getPageExtension() + '#' + reportData.getPageName(PAGE_HISTORICAL) + '_' + keyword.query + '_' + searchEngine.type"/]>" class="blcolor"><[ECHO text="keyword.query"/]></a></div></td>
+                                            <[DEFINE name="history" value="keyword.getHistory(searchEngine)"/]>
+                                            <[DEFINE name="lastPosition" value="history.getPosition()"/]>
+                                            <td height="30" width="90" class="underline_cell right_border" align="right"><div class="sp3 marg3 redcolor"><[IF condition="lastPosition != null"]><[THEN]><[IF condition="lastPosition.positionNotFound"]><[THEN]><[ECHO text="NON_IN_TOP"/]> <[ECHO text="lastPosition.nonTopReportPositionDescription"/]><[/THEN]><[ELSE]><[ECHO text="lastPosition.inTopReportPositionDescription"/]><[/ELSE]><[/IF]><[/THEN]><[ELSE]>&nbsp;<[/ELSE]><[/IF]></div></td>
+                                            <td height="30" width="70" class="underline_cell" align="right"><[IF condition="lastPosition != null"]><[THEN]><span class="sp3" style="color: #<[IF condition="history.getTopDelta(compareAgainst).ranked"]><[THEN]><[IF condition="history.getTopDelta(compareAgainst).value > 0"]><[THEN]>008F00<[/THEN]><[ELSE]><[IF condition="history.getTopDelta(compareAgainst).value < 0"]><[THEN]>FD0000<[/THEN]><[ELSE]>000000<[/ELSE]><[/IF]><[/ELSE]><[/IF]><[/THEN]><[ELSE]><[IF condition="history.getTopDelta(compareAgainst).value == ENTERED_VALUE"]><[THEN]>008F00<[/THEN]><[ELSE]><[IF condition="history.getTopDelta(compareAgainst).value == NOT_RANKED_VALUE"]><[THEN]>8F8F8F<[/THEN]><[ELSE]><[IF condition="history.getTopDelta(compareAgainst).value == NOT_CHECKED_VALUE"]><[THEN]>000000<[/THEN]><[ELSE]>FD0000<[/ELSE]><[/IF]><[/ELSE]><[/IF]><[/ELSE]><[/IF]><[/ELSE]><[/IF]>;"><[IF condition="history.getTopDelta(compareAgainst).ranked"]><[THEN]><[IF condition="history.getTopDelta(compareAgainst).value > 0"]><[THEN]>+ <[ECHO text="history.getTopDelta(compareAgainst).value"/]><[/THEN]><[ELSE]><[IF condition="history.getTopDelta(compareAgainst).value < 0"]><[THEN]><[ECHO text="history.getTopDelta(compareAgainst).value"/]><[/THEN]><[ELSE]><[ECHO text="history.getTopDelta(compareAgainst).value"/]><[/ELSE]><[/IF]><[/ELSE]><[/IF]><[/THEN]><[ELSE]><[IF condition="history.getTopDelta(compareAgainst).value == ENTERED_VALUE"]><[THEN]>Entered<[/THEN]><[ELSE]><[IF condition="history.getTopDelta(compareAgainst).value == NOT_RANKED_VALUE"]><[THEN]>Stays out<[/THEN]><[ELSE]><[IF condition="history.getTopDelta(compareAgainst).value == NOT_CHECKED_VALUE"]><[THEN]>&nbsp;<[/THEN]><[ELSE]>Dropped<[/ELSE]><[/IF]><[/ELSE]><[/IF]><[/ELSE]><[/IF]><[/ELSE]><[/IF]></span><[/THEN]><[ELSE]>&nbsp;<[/ELSE]><[/IF]></td>
+                                            <td height="30" width="20" class="underline_cell right_border"><[IF condition="lastPosition != null"]><[THEN]><span class="sp3" style="color: #<[IF condition="history.getTopDelta(compareAgainst).ranked"]><[THEN]><[IF condition="history.getTopDelta(compareAgainst).value > 0"]><[THEN]>008F00<[/THEN]><[ELSE]><[IF condition="history.getTopDelta(compareAgainst).value < 0"]><[THEN]>FD0000<[/THEN]><[ELSE]>000000<[/ELSE]><[/IF]><[/ELSE]><[/IF]><[/THEN]><[ELSE]><[IF condition="history.getTopDelta(compareAgainst).value == ENTERED_VALUE"]><[THEN]>008F00<[/THEN]><[ELSE]><[IF condition="history.getTopDelta(compareAgainst).value == NOT_RANKED_VALUE"]><[THEN]>8F8F8F<[/THEN]><[ELSE]><[IF condition="history.getTopDelta(compareAgainst).value == NOT_CHECKED_VALUE"]><[THEN]>000000<[/THEN]><[ELSE]>FD0000<[/ELSE]><[/IF]><[/ELSE]><[/IF]><[/ELSE]><[/IF]><[/ELSE]><[/IF]>;"><[IF condition="history.getTopDelta(compareAgainst).ranked"]><[THEN]><[IF condition="history.getTopDelta(compareAgainst).value > 0"]><[THEN]>&#9650;<[/THEN]><[ELSE]><[IF condition="history.getTopDelta(compareAgainst).value < 0"]><[THEN]>&#9660;<[/THEN]><[ELSE]>&nbsp;<[/ELSE]><[/IF]><[/ELSE]><[/IF]><[/THEN]><[ELSE]><[IF condition="history.getTopDelta(compareAgainst).value == ENTERED_VALUE"]><[THEN]>&#9668;<[/THEN]><[ELSE]><[IF condition="history.getTopDelta(compareAgainst).value == NOT_RANKED_VALUE"]><[THEN]>&nbsp;&#9472;<[/THEN]><[ELSE]><[IF condition="history.getTopDelta(compareAgainst).value == NOT_CHECKED_VALUE"]><[THEN]>&nbsp;<[/THEN]><[ELSE]>&#9658;<[/ELSE]><[/IF]><[/ELSE]><[/IF]><[/ELSE]><[/IF]><[/ELSE]><[/IF]></span><[/THEN]><[ELSE]>&nbsp;<[/ELSE]><[/IF]></td>
+                                            <td height="30" width="257" class="underline_cell"><[IF condition="lastPosition != null && lastPosition.url != null"]><[THEN]><div class="marg3 blcolor sp3"><a href="<[ECHO text="lastPosition.url"/]>" target="_blank" class="blcolor"><[ECHO text="lastPosition.url" cut="45"/]></a></div><[/THEN]><[ELSE]>&nbsp;<[/ELSE]><[/IF]></td>
+                                        </tr>
+                                        <[/FOR_EACH]>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td valign="top" width="18" height="97"><img src="images/shadowRightTop.png" alt="" width="18" height="97" border="0"></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td valign="bottom" height="54"><img src="images/shadowLeftBottom.png" alt="" width="20" height="54" border="0"></td>
+                    <td valign="bottom" height="54"><img src="images/shadowRightBottom.png" alt="" width="18" height="54" border="0"></td>
+                </tr>
+                <tr>
+                    <td height="19"><img src="images/shadowLeftBottomCorner.png" alt="" width="20" height="19" border="0"></td>
+                    <td align="left" valign="bottom"><img src="images/shadowBottomLeft.png" alt="" width="125" height="19" border="0"></td>
+                    <td></td>
+                    <td align="right" valign="bottom"><img src="images/shadowBottomRight.png" alt="" width="125" height="19" border="0"></td>
+                    <td><img src="images/shadowRightBottomCorner.png" alt="" width="18" height="19" border="0"></td>
+                </tr>
+            </table>
+            </a>
+            <br>
+            <[/FOR_EACH]>
+        </td>
+    </tr>
+</table>
+<br>
+</a>
+<[/THEN]>
+<[/IF]>
+<[IF condition="currentPage == PAGE_HISTORICAL || singlePage == true"]>
+<[THEN]>
+<[IF condition="singlePage"]><[THEN]><pd4ml:page.break><[/THEN]><[/IF]>
+<a name="<[ECHO text="reportData.getPageName(PAGE_HISTORICAL)"/]>">
+<table cellpadding="0" cellspacing="0">
+<tr>
+    <td width="45" class="td2_color left_border bottom_border right_border">&nbsp;</td>
+    <td width="18" align="left" valign="top"><img src="images/shadowRightTop.png" alt="" width="18" height="97" border="0"></td>
+    <td width="155" align="center" valign="middle"><[IF condition="company.logo != null"]><[THEN]><a href="<[ECHO text="company.website"/]>" target="_blank"><[IMAGE src="company.logo" alt="company.name" border="0" maxWidth="150" maxHeight="97"/]></a><[/THEN]><[/IF]></td>
+    <td width="725">
+        <table border="0" cellpadding="0" cellspacing="0" width="725">
+            <tr valign="top">
+                <td width="20" align="right" valign="top"><img src="images/shadowLeftTop.png" alt="" width="20" height="97" border="0"></td>
+                <td width="687" class="td2_color left_border bottom_border right_border">
+                    <div class="marg1">
+                        <a href="<[ECHO text="customer.website"/]>" target="_blank" class="sp1 td2_color"><[ECHO text="customer.website"/]></a><br>
+                        <span class="sp2">Search Engine Rankings Report</span><br><br>
+                        <span class="sp3">Report created on: <b class="sp3_bold"><[ECHO text="dateFormat.format(currentDate)"/]></b></span><br>
+                        <span class="sp3">Rankings data based on <b class="sp3_bold">top <[ECHO text="maxResults"/]> results</b> per search engine.</span><br>
+                        <span class="sp3">Rankings difference based on the <b class="sp3_bold"><[ECHO text="compareAgainst.getDescription('en').toLowerCase()"/]></b> results.</span>
+                    </div>
+                </td>
+                <td width="18" align="left" valign="top"><img src="images/shadowRightTop.png" alt="" width="18" height="97" border="0"></td>
+            </tr>
+        </table>
+    </td>
+</tr>
+
+<tr>
+    <td width="45">&nbsp;</td>
+    <td width="170" valign="top" colspan="2">
+
+        <table border="0" width="100%" class="marg4">
+            <tr>
+                <td width="20" align="right">
+                </td>
+                <td><span class="sp3 blcolor">
+								<a href="<[ECHO text="singlePage ? '#' + reportData.getPageName(PAGE_SUMMARY) : reportData.getPageName(PAGE_SUMMARY) + '.' + reportData.getPageExtension()"/]>" class="blcolor">Summary</a>
+							</span></td>
+            </tr>
+            <tr>
+                <td width="20" align="right">
+                </td>
+                <td><span class="sp3 blcolor">
+								<a href="<[ECHO text="singlePage ? '#' + reportData.getPageName(PAGE_BY_SE) : reportData.getPageName(PAGE_BY_SE) + '.' + reportData.getPageExtension()"/]>" class="blcolor">By&nbsp;Search&nbsp;Engine</a>
+							</span></td>
+            </tr>
+            <tr>
+                <td width="20" align="right">
+                    <span class="sp3 blcolor"><b>&#9658;</b></span>
+                </td>
+                <td><span class="sp3 blcolor">
+								<b>Historical&nbsp;Data</b>
+							</span></td>
+            </tr>
+        </table>
+
+    </td>
+    <td valign="top" width="725">
+        <div class="marg2">
+            <span class="sp1 blcolor">Historical Data</span><br>
+        </div>
+
+        <[DEFINE name="firstSearchEngine" value="searchEngines.get(0)"/]>
+        <table border="0" cellpadding="0" cellspacing="0" width="725">
+            <tr valign="top">
+                <td valign="top" width="20" height="97"><img src="images/shadowLeftTop.png" alt="" width="20" height="97" border="0"></td>
+                <td colspan="3" rowspan="3">
+                    <table border="0" class="tbl1" cellpadding="0" cellspacing="0" width="687">
+                        <tr>
+                            <td height="30" class="td3"><div class="sp4 marg3"><b>Keyword cloudmap</b> (based on a total <b><[ECHO text="keywords.size()"/]></b> keywords)</div></td>
+                            <td height="30" class="td3" align="right"><div class="marg3"><a href="<[ECHO text="helpURL"/]>#cloudMapHistorical" class="sp3 td2_color"><b>Help</b></a></div></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <div class="sp3 marg1">
+                                    <[FOR_EACH name="reportData.sort(keywords, 'query')" id="keyword"]>
+                                    <[IF condition="!reportData.isNotYetChecked(keyword)"]><[THEN]>
+                                    <span class="blcolor"><a href="<[ECHO text="singlePage ? '#' + reportData.getPageName(PAGE_HISTORICAL) + '_' + keyword.query + '_' + firstSearchEngine.type : reportData.getPageName(PAGE_HISTORICAL) + '.' + reportData.getPageExtension() + '#' + reportData.getPageName(PAGE_HISTORICAL) + '_' + keyword.query + '_' + firstSearchEngine.type"/]>" style='font-size:<[ECHO text="Math.round(75 + 125 * reportData.getKEIRelative(keyword))"/]>%;' class="blcolor"><[ECHO text="keyword.query"/]></a></span><[/THEN]><[ELSE]>
+                                    <span class="redcolor"><a href="<[ECHO text="singlePage ? '#' + reportData.getPageName(PAGE_HISTORICAL) + '_' + keyword.query + '_' + firstSearchEngine.type : reportData.getPageName(PAGE_HISTORICAL) + '.' + reportData.getPageExtension() + '#' + reportData.getPageName(PAGE_HISTORICAL) + '_' + keyword.query + '_' + firstSearchEngine.type"/]>" style='font-size:<[ECHO text="Math.round(75 + 125 * reportData.getKEIRelative(keyword))"/]>%;' class="redcolor"><[ECHO text="keyword.query"/]></a></span><[/ELSE]><[/IF]>
+                                    <[/FOR_EACH]>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td height="30" colspan="2" align="left" valign="middle" class="underline_cell"><div class="marg3"><div class="sp3"><b>Note:</b> The prominence of a keyword in the cloudmap depends on the Keyword Efficiency Index (KEI) value of the keyword.</div></div></td>
+                        </tr>
+                    </table>
+                </td>
+                <td valign="top" width="18" height="97"><img src="images/shadowRightTop.png" alt="" width="18" height="97" border="0"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td valign="bottom" height="54"><img src="images/shadowLeftBottom.png" alt="" width="20" height="54" border="0"></td>
+                <td valign="bottom" height="54"><img src="images/shadowRightBottom.png" alt="" width="18" height="54" border="0"></td>
+            </tr>
+            <tr>
+                <td height="19"><img src="images/shadowLeftBottomCorner.png" alt="" width="20" height="19" border="0"></td>
+                <td align="left" valign="bottom"><img src="images/shadowBottomLeft.png" alt="" width="125" height="19" border="0"></td>
+                <td></td>
+                <td align="right" valign="bottom"><img src="images/shadowBottomRight.png" alt="" width="125" height="19" border="0"></td>
+                <td><img src="images/shadowRightBottomCorner.png" alt="" width="18" height="19" border="0"></td>
+            </tr>
+        </table>
+
+        <[FOR_EACH name="reportData.sort(keywords, 'query')" id="keyword"]>
+        <a name="<[ECHO text="reportData.getPageName(PAGE_HISTORICAL) + '_' + keyword.query"/]>">
+        <[FOR_EACH name="reportData.sort(searchEngines, 'name')" id="searchEngine"]>
+        <[DEFINE name="history" value="keyword.getHistory(searchEngine)"/]>
+        <a name="<[ECHO text="reportData.getPageName(PAGE_HISTORICAL) + '_' + keyword.query + '_' + searchEngine.type"/]>">
+        <table border="0" cellpadding="0" cellspacing="0" width="725">
+            <tr valign="top">
+                <td valign="top" width="20" height="97"><img src="images/shadowLeftTop.png" alt="" width="20" height="97" border="0"></td>
+                <td colspan="3" rowspan="3">
+                    <table border="0" class="tbl1" cellpadding="0" cellspacing="0" width="687">
+                        <tr>
+                            <td height="30" class="td3"><div class="sp4 marg3"><b><[ECHO text="keyword.query"/]></b> in <b><[ECHO text="searchEngine.name"/]></b></div></td>
+                            <td height="30" class="td3" align="right"><div class="marg3"><a href="<[ECHO text="singlePage ? '#' + reportData.getPageName(PAGE_HISTORICAL) : reportData.getPageName(PAGE_HISTORICAL) + '.' + reportData.getPageExtension()"/]>" class="sp3 td2_color"><b>Up</b></a></div></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+
+                                <table border="0" cellpadding="0" cellspacing="0" width="687">
+                                    <tr>
+                                        <td height="30" width="200" class="td4 right_border_dark"><div class="sp3 marg3"><b>Rank History</b></div></td>
+                                        <td height="30" width="110" class="td4 right_border_dark" align="right"><div class="sp3 marg3"><b>Rank</b></div></td>
+                                        <td height="30" width="377" class="td4"><div class="sp3 marg3"><b>Date Checked</b></div></td>
+                                    </tr>
+                                    <tr>
+                                        <[DEFINE name="firstPosition" value="history.firstPosition"/]>
+                                        <td height="30" class="underline_cell right_border"><div class="marg3 sp3">Rank When First Checked</div></td>
+                                        <td height="30" class="underline_cell right_border" align="right"><div class="marg3 sp3 redcolor"><[IF condition="firstPosition != null"]><[THEN]><[IF condition="firstPosition.positionNotFound"]><[THEN]><[ECHO text="NON_IN_TOP"/]> <[ECHO text="firstPosition.nonTopReportPositionDescription"/]><[/THEN]><[ELSE]><[ECHO text="firstPosition.inTopReportPositionDescription"/]><[/ELSE]><[/IF]><[/THEN]><[ELSE]>&nbsp;<[/ELSE]><[/IF]></div></td>
+                                        <td height="30" class="underline_cell"><div class="marg3 sp3 redcolor"><[IF condition="firstPosition != null"]><[THEN]><[ECHO text="dateFormat.format(firstPosition.checkDate)"/]><[/THEN]><[ELSE]>&nbsp;<[/ELSE]><[/IF]></div></td>
+                                    </tr>
+                                    <tr>
+                                        <[DEFINE name="currentPosition" value="history.currentPosition"/]>
+                                        <td height="30" class="underline_cell right_border"><div class="marg3 sp3">Current Rank</div></td>
+                                        <td height="30" class="underline_cell right_border" align="right"><div class="marg3 sp3 redcolor"><[IF condition="currentPosition != null"]><[THEN]><[IF condition="currentPosition.positionNotFound"]><[THEN]><[ECHO text="NON_IN_TOP"/]> <[ECHO text="currentPosition.nonTopReportPositionDescription"/]><[/THEN]><[ELSE]><[ECHO text="currentPosition.inTopReportPositionDescription"/]><[/ELSE]><[/IF]><[/THEN]><[ELSE]>&nbsp;<[/ELSE]><[/IF]></div></td>
+                                        <td height="30" class="underline_cell"><div class="marg3 sp3 redcolor"><[IF condition="currentPosition != null"]><[THEN]><[ECHO text="dateFormat.format(currentPosition.checkDate)"/]><[/THEN]><[ELSE]>&nbsp;<[/ELSE]><[/IF]></div></td>
+                                    </tr>
+                                    <tr>
+                                        <[DEFINE name="highestPosition" value="history.highestPosition"/]>
+                                        <td height="30" class="underline_cell right_border"><div class="marg3 sp3">Highest Historical Rank</div></td>
+                                        <td height="30" class="underline_cell right_border" align="right"><div class="marg3 sp3 redcolor"><[IF condition="highestPosition != null"]><[THEN]><[IF condition="highestPosition.positionNotFound"]><[THEN]><[ECHO text="NON_IN_TOP"/]> <[ECHO text="highestPosition.nonTopReportPositionDescription"/]><[/THEN]><[ELSE]><[ECHO text="highestPosition.inTopReportPositionDescription"/]><[/ELSE]><[/IF]><[/THEN]><[ELSE]>&nbsp;<[/ELSE]><[/IF]></div></td>
+                                        <td height="30" class="underline_cell"><div class="marg3 sp3 redcolor"><[IF condition="highestPosition != null"]><[THEN]><[ECHO text="dateFormat.format(highestPosition.checkDate)"/]><[/THEN]><[ELSE]>&nbsp;<[/ELSE]><[/IF]></div></td>
+                                    </tr>
+                                    <tr>
+                                        <[DEFINE name="lowestPosition" value="history.lowestPosition"/]>
+                                        <td height="30" class="underline_cell right_border"><div class="marg3 sp3">Lowest Historical Rank</div></td>
+                                        <td height="30" class="underline_cell right_border" align="right"><div class="marg3 sp3 redcolor"><[IF condition="lowestPosition != null"]><[THEN]><[IF condition="lowestPosition.positionNotFound"]><[THEN]><[ECHO text="NON_IN_TOP"/]> <[ECHO text="lowestPosition.nonTopReportPositionDescription"/]><[/THEN]><[ELSE]><[ECHO text="lowestPosition.inTopReportPositionDescription"/]><[/ELSE]><[/IF]><[/THEN]><[ELSE]>&nbsp;<[/ELSE]><[/IF]></div></td>
+                                        <td height="30" class="underline_cell"><div class="marg3 sp3 redcolor"><[IF condition="lowestPosition != null"]><[THEN]><[ECHO text="dateFormat.format(lowestPosition.checkDate)"/]><[/THEN]><[ELSE]>&nbsp;<[/ELSE]><[/IF]></div></td>
+                                    </tr>
+                                </table>
+                                <table border="0" cellpadding="0" cellspacing="0" width="687">
+                                    <tr>
+                                        <td height="30" width="200" class="td4 right_border_dark"><div class="sp3 marg3"><b>Date Checked &#9660;</b></div></td>
+                                        <td height="30" width="110" class="td4 right_border_dark" align="right"><div class="sp3 marg3"><b>Rank</b></div></td>
+                                        <td height="30" width="90" class="td4 right_border_dark" align="right" colspan="2"><div class="sp3 marg3"><b>Difference</b></div></td>
+                                        <td height="30" width="287" class="td4"><div class="sp3 marg3"><b>URL Found</b></div></td>
+                                    </tr>
+                                    <[FOR_EACH name="reportData.reverse(history)" id="historyRecord"]>
+                                    <tr>
+                                        <td height="30" width="200" class="underline_cell right_border"><div class="marg3 blcolor sp3"><[IF condition="historyRecord != null"]><[THEN]><[ECHO text="dateFormat.format(historyRecord.checkDate)"/]><[/THEN]><[/IF]></div></td>
+                                        <td height="30" width="90" class="underline_cell right_border" align="right"><div class="sp3 marg3 redcolor"><[IF condition="historyRecord != null"]><[THEN]><[IF condition="historyRecord.positionNotFound"]><[THEN]><[ECHO text="NON_IN_TOP"/]> <[ECHO text="historyRecord.nonTopReportPositionDescription"/]><[/THEN]><[ELSE]><[ECHO text="historyRecord.inTopReportPositionDescription"/]><[/ELSE]><[/IF]><[/THEN]><[/IF]></div></td>
+                                        <td height="30" width="70" class="underline_cell" align="right"><[IF condition="historyRecord != null"]><[THEN]><span class="sp3" style="color: #<[IF condition="historyRecord.topDelta.ranked"]><[THEN]><[IF condition="historyRecord.topDelta.value > 0"]><[THEN]>008F00<[/THEN]><[ELSE]><[IF condition="historyRecord.topDelta.value < 0"]><[THEN]>FD0000<[/THEN]><[ELSE]>000000<[/ELSE]><[/IF]><[/ELSE]><[/IF]><[/THEN]><[ELSE]><[IF condition="historyRecord.topDelta.value == ENTERED_VALUE"]><[THEN]>008F00<[/THEN]><[ELSE]><[IF condition="historyRecord.topDelta.value == NOT_RANKED_VALUE"]><[THEN]>8F8F8F<[/THEN]><[ELSE]><[IF condition="historyRecord.topDelta.value == NOT_CHECKED_VALUE"]><[THEN]>000000<[/THEN]><[ELSE]>FD0000<[/ELSE]><[/IF]><[/ELSE]><[/IF]><[/ELSE]><[/IF]><[/ELSE]><[/IF]>;"><[IF condition="historyRecord.topDelta.ranked"]><[THEN]><[IF condition="historyRecord.topDelta.value > 0"]><[THEN]>+ <[ECHO text="historyRecord.topDelta.value"/]><[/THEN]><[ELSE]><[IF condition="historyRecord.topDelta.value < 0"]><[THEN]><[ECHO text="historyRecord.topDelta.value"/]><[/THEN]><[ELSE]><[ECHO text="historyRecord.topDelta.value"/]><[/ELSE]><[/IF]><[/ELSE]><[/IF]><[/THEN]><[ELSE]><[IF condition="historyRecord.topDelta.value == ENTERED_VALUE"]><[THEN]>Entered<[/THEN]><[ELSE]><[IF condition="historyRecord.topDelta.value == NOT_RANKED_VALUE"]><[THEN]>Stays out<[/THEN]><[ELSE]><[IF condition="historyRecord.topDelta.value == NOT_CHECKED_VALUE"]><[THEN]>&nbsp;<[/THEN]><[ELSE]>Dropped<[/ELSE]><[/IF]><[/ELSE]><[/IF]><[/ELSE]><[/IF]><[/ELSE]><[/IF]></span><[/THEN]><[/IF]></td>
+                                        <td height="30" width="20" class="underline_cell right_border"><[IF condition="historyRecord != null"]><[THEN]><span class="sp3" style="color: #<[IF condition="historyRecord.topDelta.ranked"]><[THEN]><[IF condition="historyRecord.topDelta.value > 0"]><[THEN]>008F00<[/THEN]><[ELSE]><[IF condition="historyRecord.topDelta.value < 0"]><[THEN]>FD0000<[/THEN]><[ELSE]>000000<[/ELSE]><[/IF]><[/ELSE]><[/IF]><[/THEN]><[ELSE]><[IF condition="historyRecord.topDelta.value == ENTERED_VALUE"]><[THEN]>008F00<[/THEN]><[ELSE]><[IF condition="historyRecord.topDelta.value == NOT_RANKED_VALUE"]><[THEN]>8F8F8F<[/THEN]><[ELSE]><[IF condition="historyRecord.topDelta.value == NOT_CHECKED_VALUE"]><[THEN]>000000<[/THEN]><[ELSE]>FD0000<[/ELSE]><[/IF]><[/ELSE]><[/IF]><[/ELSE]><[/IF]><[/ELSE]><[/IF]>;"><[IF condition="historyRecord.topDelta.ranked"]><[THEN]><[IF condition="historyRecord.topDelta.value > 0"]><[THEN]>&#9650;<[/THEN]><[ELSE]><[IF condition="historyRecord.topDelta.value < 0"]><[THEN]>&#9660;<[/THEN]><[ELSE]>&nbsp;<[/ELSE]><[/IF]><[/ELSE]><[/IF]><[/THEN]><[ELSE]><[IF condition="historyRecord.topDelta.value == ENTERED_VALUE"]><[THEN]>&#9668;<[/THEN]><[ELSE]><[IF condition="historyRecord.topDelta.value == NOT_RANKED_VALUE"]><[THEN]>&nbsp;&#9472;<[/THEN]><[ELSE]><[IF condition="historyRecord.topDelta.value == NOT_CHECKED_VALUE"]><[THEN]>&nbsp;<[/THEN]><[ELSE]>&#9658;<[/ELSE]><[/IF]><[/ELSE]><[/IF]><[/ELSE]><[/IF]><[/ELSE]><[/IF]></span><[/THEN]><[/IF]></td>
+                                        <td height="30" width="307" class="underline_cell"><[IF condition="historyRecord != null && historyRecord.url != null"]><[THEN]><div class="marg3 blcolor sp3"><a href="<[ECHO text="historyRecord.url"/]>" target="_blank" class="blcolor"><[ECHO text="historyRecord.url" cut="60"/]></a></div><[/THEN]><[ELSE]>&nbsp;<[/ELSE]><[/IF]></td>
+                                    </tr>
+                                    <[/FOR_EACH]>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <td valign="top" width="18" height="97"><img src="images/shadowRightTop.png" alt="" width="18" height="97" border="0"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td valign="bottom" height="54"><img src="images/shadowLeftBottom.png" alt="" width="20" height="54" border="0"></td>
+                <td valign="bottom" height="54"><img src="images/shadowRightBottom.png" alt="" width="18" height="54" border="0"></td>
+            </tr>
+            <tr>
+                <td height="19"><img src="images/shadowLeftBottomCorner.png" alt="" width="20" height="19" border="0"></td>
+                <td align="left" valign="bottom"><img src="images/shadowBottomLeft.png" alt="" width="125" height="19" border="0"></td>
+                <td></td>
+                <td align="right" valign="bottom"><img src="images/shadowBottomRight.png" alt="" width="125" height="19" border="0"></td>
+                <td><img src="images/shadowRightBottomCorner.png" alt="" width="18" height="19" border="0"></td>
+            </tr>
+        </table>
+        </a>
+        <[/FOR_EACH]>
+        </a>
+        <[/FOR_EACH]>
+    </td>
+</tr>
+</table>
+<br>
+</a>
+<[/THEN]>
+<[/IF]>
+<table border="0" height="145" cellpadding="0" cellspacing="0">
+    <tr>
+        <td width="70">&nbsp;</td>
+        <td width="870">
+					<span class="blcolor marg4 sp3">
+						<[IF condition="currentPage == PAGE_SUMMARY && reportData.singlePage != true"]>
+						<[THEN]>
+						<b>Summary</b>
+						<[/THEN]>
+						<[ELSE]>
+						<a href="<[ECHO text="singlePage ? '#' + reportData.getPageName(PAGE_SUMMARY) : reportData.getPageName(PAGE_SUMMARY) + '.' + reportData.getPageExtension()"/]>" class="blcolor">Summary</a>
+                        <[/ELSE]>
+						<[/IF]>
+						<span class="marg1">|</span>
+						<[IF condition="currentPage == PAGE_BY_SE && reportData.singlePage != true"]>
+						<[THEN]>
+						<b>By&nbsp;Search&nbsp;Engine</b>
+						<[/THEN]>
+						<[ELSE]>
+						<a href="<[ECHO text="singlePage ? '#' + reportData.getPageName(PAGE_BY_SE) : reportData.getPageName(PAGE_BY_SE) + '.' + reportData.getPageExtension()"/]>" class="blcolor">By&nbsp;Search&nbsp;Engine</a>
+                        <[/ELSE]>
+						<[/IF]>
+						<span class="marg1">|</span>
+						<[IF condition="currentPage == PAGE_HISTORICAL && reportData.singlePage != true"]>
+						<[THEN]>
+						<b>Historical&nbsp;Data</b>
+						<[/THEN]>
+						<[ELSE]>
+						<a href="<[ECHO text="singlePage ? '#' + reportData.getPageName(PAGE_HISTORICAL) : reportData.getPageName(PAGE_HISTORICAL) + '.' + reportData.getPageExtension()"/]>" class="blcolor">Historical&nbsp;Data</a>
+                        <[/ELSE]>
+						<[/IF]>
+					</span>
+            <br>
+            <br>
+					<span class="sp6">
+						Report created <[ECHO text="dateFormat.format(currentDate)"/]> by <span class="blcolor"><a href="<[ECHO text="company.website"/]>" target="_blank" class="blcolor"><[ECHO text="company.name"/]></a></span><br>
+						Powered by <span class="blcolor"><a href="http://www.link-assistant.com/rank-tracker/" target="_blank" class="blcolor">Rank Tracker</a></span>
+					</span>
+        </td>
+    </tr>
+</table>
+</body>
+</html>
+<[/REPORT]>
